@@ -101,6 +101,17 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void abandonMatch() {
+    _turnTimer?.cancel();
+    _turnTimer = null;
+    board = List<String>.filled(9, '');
+    _winningLine = <int>[];
+    gameResult = null;
+    _turnTimeLeft = _turnDurationSeconds;
+    currentPlayer = _startingPlayer;
+    notifyListeners();
+  }
+
   void startTurnTimer() {
     if (gameResult != null) {
       return;

@@ -19,35 +19,39 @@ class _GameScreenState extends State<GameScreen> {
   bool _resultSaved = false;
   bool _isShowingResultSheet = false;
   bool _resultPopupShown = false;
+  GameProvider? _gameProvider;
+  bool _timerStarted = false;
 
   @override
   void initState() {
     super.initState();
     _resultSaved = false;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.read<GameProvider>().startTurnTimer();
-      }
-    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _gameProvider ??= context.read<GameProvider>();
+    if (!_timerStarted) {
+      _timerStarted = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        _gameProvider?.startTurnTimer();
+      });
+    }
   }
 
   @override
   void deactivate() {
-    // Close the result modal if it's open
-    if (_isShowingResultSheet) {
-      try {
-        Navigator.of(context, rootNavigator: false).pop();
-      } catch (e) {
-        // Ignore if modal is already closed
-      }
-    }
-    context.read<GameProvider>().stopTurnTimer();
+    _gameProvider?.stopTurnTimer();
     super.deactivate();
   }
 
   @override
   void dispose() {
-    context.read<GameProvider>().stopTurnTimer();
+    _gameProvider?.stopTurnTimer();
     super.dispose();
   }
 
@@ -102,6 +106,7 @@ class _GameScreenState extends State<GameScreen> {
           );
 
           if (leave == true && context.mounted) {
+            _gameProvider?.abandonMatch();
             Navigator.of(context).pop();
           }
         },
@@ -236,7 +241,8 @@ class _GameScreenState extends State<GameScreen> {
               currentIndex: 0,
               onTap: (index) {
                 if (index == 1) {
-                  Navigator.pushNamed(context, '/history');
+                  _gameProvider?.abandonMatch();
+                  Navigator.pushReplacementNamed(context, '/history');
                 }
               },
               backgroundColor: const Color(0xFF2C2C2E),
@@ -264,6 +270,11 @@ class _GameScreenState extends State<GameScreen> {
 
   Future<void> _handleGameResultIfNeeded() async {
     if (!mounted || _isShowingResultSheet || _resultPopupShown) {
+      return;
+    }
+
+    final route = ModalRoute.of(context);
+    if (route != null && !route.isCurrent) {
       return;
     }
 
