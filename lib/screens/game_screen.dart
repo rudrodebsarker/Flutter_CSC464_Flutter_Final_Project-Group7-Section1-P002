@@ -16,6 +16,7 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
+  late final GameProvider _gameProvider;
   bool _resultSaved = false;
   bool _isShowingResultSheet = false;
   bool _resultPopupShown = false;
@@ -23,10 +24,11 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+    _gameProvider = context.read<GameProvider>();
     _resultSaved = false;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        context.read<GameProvider>().startTurnTimer();
+        _gameProvider.startTurnTimer();
       }
     });
   }
@@ -41,13 +43,13 @@ class _GameScreenState extends State<GameScreen> {
         // Ignore if modal is already closed
       }
     }
-    context.read<GameProvider>().stopTurnTimer();
+    _gameProvider.stopTurnTimer();
     super.deactivate();
   }
 
   @override
   void dispose() {
-    context.read<GameProvider>().stopTurnTimer();
+    _gameProvider.stopTurnTimer();
     super.dispose();
   }
 
@@ -74,7 +76,8 @@ class _GameScreenState extends State<GameScreen> {
           }
 
           final gameInProgress =
-              provider.gameResult == null && provider.board.any((c) => c.isNotEmpty);
+              provider.gameResult == null &&
+              provider.board.any((c) => c.isNotEmpty);
 
           if (!gameInProgress) {
             Navigator.of(context).pop();
@@ -123,7 +126,10 @@ class _GameScreenState extends State<GameScreen> {
             actions: [
               IconButton(
                 onPressed: () {},
-                icon: const Icon(Icons.settings_rounded, color: AppTheme.primary),
+                icon: const Icon(
+                  Icons.settings_rounded,
+                  color: AppTheme.primary,
+                ),
               ),
             ],
           ),
@@ -143,18 +149,25 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                   const SizedBox(height: 10),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(40),
-                      border: Border.all(color: const Color(0x66FF9800), width: 1.2),
+                      border: Border.all(
+                        color: const Color(0x66FF9800),
+                        width: 1.2,
+                      ),
                       color: const Color(0x1AFF9800),
                     ),
                     child: Text(
                       'PLAYER ${provider.currentPlayer}',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: AppTheme.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(
+                            color: AppTheme.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -194,11 +207,7 @@ class _GameScreenState extends State<GameScreen> {
                     ],
                   ),
                   const SizedBox(height: 18),
-                  const Expanded(
-                    child: Center(
-                      child: GameBoard(),
-                    ),
-                  ),
+                  const Expanded(child: Center(child: GameBoard())),
                   const SizedBox(height: 12),
                   Row(
                     children: [
@@ -297,13 +306,13 @@ class _GameScreenState extends State<GameScreen> {
     final isTie = winner == 'Tie';
     final winnerName = winner == 'X'
         ? (gameProvider.player1Name.isEmpty
-            ? 'Player 1'
-            : gameProvider.player1Name)
+              ? 'Player 1'
+              : gameProvider.player1Name)
         : winner == 'O'
-            ? (gameProvider.player2Name.isEmpty
-                ? 'Player 2'
-                : gameProvider.player2Name)
-            : 'Draw';
+        ? (gameProvider.player2Name.isEmpty
+              ? 'Player 2'
+              : gameProvider.player2Name)
+        : 'Draw';
 
     if (!mounted) {
       _isShowingResultSheet = false;
@@ -325,14 +334,12 @@ class _GameScreenState extends State<GameScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  isTie ? '🤝' : '🏆',
-                  style: const TextStyle(fontSize: 44),
-                ),
+                Text(isTie ? '🤝' : '🏆', style: const TextStyle(fontSize: 44)),
                 const SizedBox(height: 10),
                 Text(
                   isTie ? "It's a Draw!" : '$winnerName Wins!',
-                  style: Theme.of(sheetContext).textTheme.displaySmall?.copyWith(
+                  style: Theme.of(sheetContext).textTheme.displaySmall
+                      ?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
                       ),
@@ -344,8 +351,8 @@ class _GameScreenState extends State<GameScreen> {
                   'vs '
                   '${gameProvider.player2Name.isEmpty ? 'Player 2' : gameProvider.player2Name}',
                   style: Theme.of(sheetContext).textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFFB5B5B8),
-                      ),
+                    color: const Color(0xFFB5B5B8),
+                  ),
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
@@ -378,7 +385,10 @@ class _GameScreenState extends State<GameScreen> {
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      side: const BorderSide(color: AppTheme.primary, width: 1.4),
+                      side: const BorderSide(
+                        color: AppTheme.primary,
+                        width: 1.4,
+                      ),
                       shape: const StadiumBorder(),
                     ),
                     child: const Text('New Game'),
@@ -428,18 +438,18 @@ class _ScoreCard extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: const Color(0xFFB7B7BB),
-                  letterSpacing: 1.2,
-                  fontWeight: FontWeight.w700,
-                ),
+              color: const Color(0xFFB7B7BB),
+              letterSpacing: 1.2,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
             '$value',
             style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                ),
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ],
       ),

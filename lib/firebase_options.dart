@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -64,5 +61,14 @@ class DefaultFirebaseOptions {
     projectId: 'radiant-toe',
     storageBucket: 'radiant-toe.firebasestorage.app',
     iosBundleId: 'com.example.tictactoeP002',
+  );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyA1FvEanZcw-3f6KKR9niZkGUeXT4XpANM',
+    appId: '1:1032388408133:web:6bf8ac8515fbd91d07042c',
+    messagingSenderId: '1032388408133',
+    projectId: 'radiant-toe',
+    authDomain: 'radiant-toe.firebaseapp.com',
+    storageBucket: 'radiant-toe.firebasestorage.app',
   );
 }

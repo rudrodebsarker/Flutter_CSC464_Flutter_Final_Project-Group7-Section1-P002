@@ -17,12 +17,11 @@ class GameBoard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildRow(context, provider, 0),
-          const SizedBox(height: 8),
           _buildRow(context, provider, 1),
-          const SizedBox(height: 8),
           _buildRow(context, provider, 2),
         ],
       ),
@@ -30,14 +29,16 @@ class GameBoard extends StatelessWidget {
   }
 
   Widget _buildRow(BuildContext context, GameProvider provider, int row) {
-    return Row(
-      children: [
-        _buildCell(context, provider, row * 3 + 0),
-        const SizedBox(width: 8),
-        _buildCell(context, provider, row * 3 + 1),
-        const SizedBox(width: 8),
-        _buildCell(context, provider, row * 3 + 2),
-      ],
+    return Expanded(
+      child: Row(
+        children: [
+          _buildCell(context, provider, row * 3 + 0),
+          const SizedBox(width: 8),
+          _buildCell(context, provider, row * 3 + 1),
+          const SizedBox(width: 8),
+          _buildCell(context, provider, row * 3 + 2),
+        ],
+      ),
     );
   }
 
@@ -52,7 +53,7 @@ class GameBoard extends StatelessWidget {
             ? () => context.read<GameProvider>().makeMove(index)
             : null,
         child: Container(
-          height: 100,
+          height: null,
           decoration: BoxDecoration(
             color: const Color(0xFF2C2C2E),
             borderRadius: BorderRadius.circular(12),
